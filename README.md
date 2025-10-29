@@ -5,8 +5,8 @@
 ### 29-10-2025
 
 - Melakukan inisialisasi proyek
-
-
+- Menambahkan method 'sayHello()' pada HomeController
+= Menambahkan Pengujian untuk method 'sayHello()'
 ## Syntax
 
 ### Melakukan Instal Ulang Kebutuhan Paket
