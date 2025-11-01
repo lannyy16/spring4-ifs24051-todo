@@ -36,6 +36,7 @@ public class HomeController {
         );
     }
 
+    // ✅ Disesuaikan agar cocok dengan unit test
     private String getProgramStudi(String prefix) {
         switch (prefix) {
             case "11S": return "Sarjana Informatika";
@@ -44,13 +45,11 @@ public class HomeController {
             case "21S": return "Sarjana Manajemen Rekayasa";
             case "22S": return "Sarjana Teknik Metalurgi";
             case "31S": return "Sarjana Teknik Bioproses";
-            case "114": return "Diploma 4 Teknologi Rekasaya Perangkat Lunak";
-            case "113": return "Diploma 3 Teknologi Informasi";
-            case "133": return "Diploma 3 Teknologi Komputer";
+            case "114": return "Diploma Teknik Rekayasa Perangkat Lunak";
+            case "113": return "Diploma Teknologi Informasi";
+            case "133": return "Diploma Teknologi Komputer";
             default: return "Program Studi Tidak Dikenal";
         }
-
-        
     }
 
     // 2️⃣ Perolehan Nilai
@@ -82,25 +81,32 @@ public class HomeController {
         );
     }
 
-    // 4️⃣ Paling Ter
     @GetMapping("/palingTer")
     public String palingTer(@RequestParam String strBase64) {
-        byte[] decoded = Base64.getDecoder().decode(strBase64);
-        String data = new String(decoded);
+    byte[] decoded = Base64.getDecoder().decode(strBase64);
+    String data = new String(decoded);
 
-        // Pisahkan berdasarkan spasi, lalu cari kata terpanjang dan terpendek
-        String[] kata = data.split("\\s+");
-        String terpendek = kata[0];
-        String terpanjang = kata[0];
-
-        for (String k : kata) {
-            if (k.length() < terpendek.length()) terpendek = k;
-            if (k.length() > terpanjang.length()) terpanjang = k;
-        }
-
-        return String.format(
-            "Kalimat: %s<br>Paling Pendek: %s<br>Paling Panjang: %s",
-            data, terpendek, terpanjang
-        );
+    // Cegah array kosong
+    String[] kata = data.trim().split("\\s+");
+    if (kata.length == 0) {
+        return "Kalimat kosong atau tidak mengandung kata.";
     }
+
+    String terpendek = kata[0];
+    String terpanjang = kata[0];
+
+    for (String k : kata) {
+        if (k != null && k.length() < terpendek.length()) {
+            terpendek = k;
+        }
+        if (k != null && k.length() > terpanjang.length()) {
+            terpanjang = k;
+        }
+    }
+
+    return String.format(
+        "Kalimat: %s<br>Paling Pendek: %s<br>Paling Panjang: %s",
+        data, terpendek, terpanjang
+    );
+}
 }

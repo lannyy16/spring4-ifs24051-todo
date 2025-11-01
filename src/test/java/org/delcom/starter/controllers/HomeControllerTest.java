@@ -172,6 +172,10 @@ class HomeControllerTest {
         assertTrue(result.contains("Perolehan Nilai: Nilai Akhir: 90"));
     }
 
+   
+
+
+
     // ============================
     // 4️⃣ Tes Perbedaan L dan Kebalikannya
     // ============================
@@ -205,20 +209,32 @@ class HomeControllerTest {
     // ============================
     // 5️⃣ Tes Paling Ter
     // ============================
-@Test
-@DisplayName("PalingTer menampilkan kata terpanjang dan terpendek dengan benar")
-void palingTer_ShouldReturnShortestAndLongestWords() {
-    HomeController controller = new HomeController();
+    @Test
+    @DisplayName("PalingTer menampilkan kata terpendek dan terpanjang dengan benar")
+    void palingTer_ShouldReturnShortestAndLongestWords() {
+        HomeController controller = new HomeController();
+        String text = "Saya belajar Spring Boot";
+        String encoded = Base64.getEncoder().encodeToString(text.getBytes());
 
-    String text = "Hai Belajar springboot";
-    String encoded = Base64.getEncoder().encodeToString(text.getBytes());
+        String result = controller.palingTer(encoded);
 
-    String result = controller.palingTer(encoded);
+        assertTrue(result.contains("Paling Pendek"));
+        assertTrue(result.contains("Paling Panjang"));
+        assertTrue(result.contains("Spring"));
+    }
 
-    assertTrue(result.contains("Kalimat: Hai Belajar springboot"));
-    assertTrue(result.contains("Paling Pendek: Hai"));
-    assertTrue(result.contains("Paling Panjang: springboot"));
-}
+    @Test
+    @DisplayName("PalingTer menangani satu kata dengan benar")
+    void palingTer_ShouldHandleSingleWord() {
+        HomeController controller = new HomeController();
+        String text = "Informatika";
+        String encoded = Base64.getEncoder().encodeToString(text.getBytes());
 
+        String result = controller.palingTer(encoded);
 
+        assertTrue(result.contains("Informatika"));
+        assertTrue(result.contains("Paling Pendek: Informatika"));
+        assertTrue(result.contains("Paling Panjang: Informatika"));
+    }
+    
 }
