@@ -210,7 +210,7 @@ class HomeControllerTest {
 void palingTer_ShouldReturnShortestAndLongestWords() {
     HomeController controller = new HomeController();
 
-    String text = "Hai Belajars pringboot";
+    String text = "Hai Belajar springboot";
     String encoded = Base64.getEncoder().encodeToString(text.getBytes());
 
     String result = controller.palingTer(encoded);
