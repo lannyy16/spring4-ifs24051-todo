@@ -210,15 +210,15 @@ class HomeControllerTest {
 void palingTer_ShouldReturnShortestAndLongestWords() {
     HomeController controller = new HomeController();
 
-    String text = "Hai Belajarspringboot";
+    String text = "Hai Belajars pringboot";
     String encoded = Base64.getEncoder().encodeToString(text.getBytes());
 
     String result = controller.palingTer(encoded);
 
-    assertTrue(result.contains("Kalimat: Hai Belajarspringboot"));
+    assertTrue(result.contains("Kalimat: Hai Belajar springboot"));
     assertTrue(result.contains("Paling Pendek: Hai"));
-    assertTrue(result.contains("Paling Panjang: Belajarspringboot"));
+    assertTrue(result.contains("Paling Panjang: springboot"));
 }
 
-    
+
 }
