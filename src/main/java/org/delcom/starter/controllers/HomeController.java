@@ -81,32 +81,25 @@ public class HomeController {
         );
     }
 
+    // 4️⃣ Paling Ter
     @GetMapping("/palingTer")
     public String palingTer(@RequestParam String strBase64) {
-    byte[] decoded = Base64.getDecoder().decode(strBase64);
-    String data = new String(decoded);
+        byte[] decoded = Base64.getDecoder().decode(strBase64);
+        String data = new String(decoded);
 
-    // Cegah array kosong
-    String[] kata = data.trim().split("\\s+");
-    if (kata.length == 0) {
-        return "Kalimat kosong atau tidak mengandung kata.";
-    }
+        // Pisahkan berdasarkan spasi, lalu cari kata terpanjang dan terpendek
+        String[] kata = data.split("\\s+");
+        String terpendek = kata[0];
+        String terpanjang = kata[0];
 
-    String terpendek = kata[0];
-    String terpanjang = kata[0];
-
-    for (String k : kata) {
-        if (k != null && k.length() < terpendek.length()) {
-            terpendek = k;
+        for (String k : kata) {
+            if (k.length() < terpendek.length()) terpendek = k;
+            if (k.length() > terpanjang.length()) terpanjang = k;
         }
-        if (k != null && k.length() > terpanjang.length()) {
-            terpanjang = k;
-        }
-    }
 
-    return String.format(
-        "Kalimat: %s<br>Paling Pendek: %s<br>Paling Panjang: %s",
-        data, terpendek, terpanjang
-    );
-}
+        return String.format(
+            "Kalimat: %s<br>Paling Pendek: %s<br>Paling Panjang: %s",
+            data, terpendek, terpanjang
+        );
+    }
 }

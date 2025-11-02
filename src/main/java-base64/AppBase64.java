@@ -1,5 +1,3 @@
-package org.delcom.controllers;
-
 import org.springframework.stereotype.Component;
 import java.nio.file.Files;
 import java.nio.file.Paths;

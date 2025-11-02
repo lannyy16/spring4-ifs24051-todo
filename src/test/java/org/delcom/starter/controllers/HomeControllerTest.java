@@ -8,13 +8,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class HomeControllerTest {
 
+    private final HomeController controller = new HomeController();
+
     // ============================
     // 1️⃣ Tes Hello Endpoint
     // ============================
     @Test
     @DisplayName("Mengembalikan pesan sambutan default dengan benar")
     void hello_ShouldReturnWelcomeMessage() {
-        HomeController controller = new HomeController();
         String result = controller.hello();
         assertEquals("Hay Abdullah, selamat datang di pengembangan aplikasi dengan Spring Boot!", result);
     }
@@ -22,9 +23,8 @@ class HomeControllerTest {
     @Test
     @DisplayName("Mengembalikan sapaan personal yang benar")
     void sayHello_ShouldReturnPersonalGreeting() {
-        HomeController controller = new HomeController();
-        String result = controller.sayHello("Gladys");
-        assertEquals("Hello, Gladys!", result);
+        String result = controller.sayHello("Niken");
+        assertEquals("Hello, Niken!", result);
     }
 
     // ============================
@@ -32,157 +32,80 @@ class HomeControllerTest {
     // ============================
     @Test
     @DisplayName("Mengembalikan informasi NIM dengan benar untuk Sarjana Informatika")
-    void informasiNim_ShouldReturnFormattedInfoS1IF() {
-        HomeController controller = new HomeController();
-        String nim = "11S24051";
-
+    void informasiNim_ShouldReturnFormattedInfo_ForInformatika() {
+        String nim = "11S24052";
+        String expected = "Informasi NIM 11S24052:<br>> Program Studi: Sarjana Informatika<br>> Angkatan: 2024<br>> Urutan: 52";
         String result = controller.informasiNim(nim);
-
-        assertTrue(result.contains("Sarjana Informatika"));
-        assertTrue(result.contains("2024"));
-        assertTrue(result.contains("Urutan: 51"));
+        assertEquals(expected, result);
     }
 
     @Test
-    @DisplayName("Mengembalikan informasi NIM untuk program studi lain")
-    void informasiNim_ShouldReturnFormattedInfoS1SI() {
-        HomeController controller = new HomeController();
-        String nim = "12S23002"; // Sistem Informasi
-
+    @DisplayName("Mengembalikan informasi NIM dengan benar untuk program studi lain")
+    void informasiNim_ShouldReturnFormattedInfo_ForOtherPrograms() {
+        String nim = "21S23001";
+        String expected = "Informasi NIM 21S23001:<br>> Program Studi: Sarjana Manajemen Rekayasa<br>> Angkatan: 2023<br>> Urutan: 1";
         String result = controller.informasiNim(nim);
-
-        assertTrue(result.contains("Sarjana Sistem Informasi"));
-        assertTrue(result.contains("2023"));
-        assertTrue(result.contains("Urutan: 2"));
+        assertEquals(expected, result);
     }
 
     @Test
-    @DisplayName("Mengembalikan informasi NIM dengan benar untuk Sarjana Teknik Elektro")
-    void informasiNim_ShouldReturnFormattedInfoS1TE() {
-        HomeController controller = new HomeController();
-        String nim = "14S24051";
-
+    @DisplayName("Mengembalikan 'Program Studi Tidak Dikenal' untuk kode prefix tidak valid")
+    void informasiNim_ShouldReturnUnknownProgram_ForInvalidPrefix() {
+        String nim = "99X25001";
         String result = controller.informasiNim(nim);
-
-        assertTrue(result.contains("Sarjana Teknik Elektro"));
-        assertTrue(result.contains("2024"));
-        assertTrue(result.contains("Urutan: 51"));
+        assertTrue(result.contains("Program Studi Tidak Dikenal"));
     }
-
-    @Test
-    @DisplayName("Mengembalikan informasi NIM dengan benar untuk Sarjana Manajemen Rekayasa")
-    void informasiNim_ShouldReturnFormattedInfoS1MR() {
-        HomeController controller = new HomeController();
-        String nim = "21S24051";
-
-        String result = controller.informasiNim(nim);
-
-        assertTrue(result.contains("Sarjana Manajemen Rekayasa"));
-        assertTrue(result.contains("2024"));
-        assertTrue(result.contains("Urutan: 51"));
-    }
-
-    @Test
-    @DisplayName("Mengembalikan informasi NIM dengan benar untuk Sarjana Teknik Metalurgi")
-    void informasiNim_ShouldReturnFormattedInfoS1TM() {
-        HomeController controller = new HomeController();
-        String nim = "22S24051";
-
-        String result = controller.informasiNim(nim);
-
-        assertTrue(result.contains("Sarjana Teknik Metalurgi"));
-        assertTrue(result.contains("2024"));
-        assertTrue(result.contains("Urutan: 51"));
-    }
-
-    @Test
-    @DisplayName("Mengembalikan informasi NIM dengan benar untuk Sarjana Teknik Bioproses")
-    void informasiNim_ShouldReturnFormattedInfoS1TB() {
-        HomeController controller = new HomeController();
-        String nim = "31S24051";
-
-        String result = controller.informasiNim(nim);
-
-        assertTrue(result.contains("Sarjana Teknik Bioproses"));
-        assertTrue(result.contains("2024"));
-        assertTrue(result.contains("Urutan: 51"));
-    }
-
-    @Test
-    @DisplayName("Mengembalikan informasi NIM dengan benar untuk Diploma 4 Teknologi Rekasaya Perangkat Lunak ")
-    void informasiNim_ShouldReturnFormattedInfoD4TRPL() {
-        HomeController controller = new HomeController();
-        String nim = "11424051";
-
-        String result = controller.informasiNim(nim);
-
-        assertTrue(result.contains("Diploma 4 Teknologi Rekasaya Perangkat Lunak"));
-        assertTrue(result.contains("2024"));
-        assertTrue(result.contains("Urutan: 51"));
-    }
-
-    @Test
-    @DisplayName("Mengembalikan informasi NIM dengan benar untuk Diploma 3 Teknologi Informasi ")
-    void informasiNim_ShouldReturnFormattedInfoD3TI() {
-        HomeController controller = new HomeController();
-        String nim = "11324051";
-
-        String result = controller.informasiNim(nim);
-
-        assertTrue(result.contains("Diploma 3 Teknologi Informasi"));
-        assertTrue(result.contains("2024"));
-        assertTrue(result.contains("Urutan: 51"));
-    }
-
-     @Test
-    @DisplayName("Mengembalikan informasi NIM dengan benar untuk Diploma 3 Teknologi Komputer ")
-    void informasiNim_ShouldReturnFormattedInfoD3TK() {
-        HomeController controller = new HomeController();
-        String nim = "13324051";
-
-        String result = controller.informasiNim(nim);
-
-        assertTrue(result.contains("Diploma 3 Teknologi Komputer"));
-        assertTrue(result.contains("2024"));
-        assertTrue(result.contains("Urutan: 51"));   
-    }
-
-    @Test
-    @DisplayName("Mengembalikan Program Studi Tidak Dikenal jika prefix tidak cocok")
-    void informasiNim_ShouldReturnUnknownProgram() {
-    HomeController controller = new HomeController();  // ✅ tambahkan ini
-    String nim = "90x24051";
-
-    String result = controller.informasiNim(nim);
-    assertTrue(result.contains("Program Studi Tidak Dikenal"));
-}
 
     // ============================
-    // 3️⃣ Tes Perolehan Nilai
+    // 3️⃣ Tes getProgramStudi (private)
+    // ============================
+    @Test
+    @DisplayName("getProgramStudi mengembalikan nama program studi yang benar")
+    void getProgramStudi_ShouldReturnCorrectPrograms() throws Exception {
+        var method = HomeController.class.getDeclaredMethod("getProgramStudi", String.class);
+        method.setAccessible(true);
+
+        assertEquals("Sarjana Informatika", method.invoke(controller, "11S"));
+        assertEquals("Sarjana Sistem Informasi", method.invoke(controller, "12S"));
+        assertEquals("Sarjana Teknik Elektro", method.invoke(controller, "14S"));
+        assertEquals("Sarjana Manajemen Rekayasa", method.invoke(controller, "21S"));
+        assertEquals("Sarjana Teknik Metalurgi", method.invoke(controller, "22S"));
+        assertEquals("Sarjana Teknik Bioproses", method.invoke(controller, "31S"));
+        assertEquals("Diploma Teknik Rekayasa Perangkat Lunak", method.invoke(controller, "114"));
+        assertEquals("Diploma Teknologi Informasi", method.invoke(controller, "113"));
+        assertEquals("Diploma Teknologi Komputer", method.invoke(controller, "133"));
+    }
+
+    @Test
+    @DisplayName("getProgramStudi mengembalikan 'Program Studi Tidak Dikenal' untuk kode tidak valid")
+    void getProgramStudi_ShouldReturnUnknownForInvalidCode() throws Exception {
+        var method = HomeController.class.getDeclaredMethod("getProgramStudi", String.class);
+        method.setAccessible(true);
+
+        assertEquals("Program Studi Tidak Dikenal", method.invoke(controller, "99X"));
+        assertEquals("Program Studi Tidak Dikenal", method.invoke(controller, ""));
+    }
+
+    // ============================
+    // 4️⃣ Tes Perolehan Nilai
     // ============================
     @Test
     @DisplayName("Perolehan Nilai menampilkan hasil decoding Base64 dengan benar")
     void perolehanNilai_ShouldReturnDecodedValue() {
-        HomeController controller = new HomeController();
-        String text = "Nilai Akhir: 90";
+        String text = "Nilai Akhir: 95";
         String encoded = Base64.getEncoder().encodeToString(text.getBytes());
 
         String result = controller.perolehanNilai(encoded);
 
-        assertTrue(result.contains("Perolehan Nilai: Nilai Akhir: 90"));
+        assertEquals("Perolehan Nilai: Nilai Akhir: 95", result);
     }
 
-   
-
-
-
     // ============================
-    // 4️⃣ Tes Perbedaan L dan Kebalikannya
+    // 5️⃣ Tes Perbedaan L dan Kebalikannya
     // ============================
     @Test
-    @DisplayName("Perbedaan L menampilkan hasil perbandingan teks dengan kebalikannya")
-    void perbedaanL_ShouldReturnDifference() {
-        HomeController controller = new HomeController();
+    @DisplayName("PerbedaanL menampilkan perbedaan karakter dengan benar")
+    void perbedaanL_ShouldReturnDifferences() {
         String text = "ABCD";
         String encoded = Base64.getEncoder().encodeToString(text.getBytes());
 
@@ -194,47 +117,42 @@ class HomeControllerTest {
     }
 
     @Test
-    @DisplayName("Perbedaan L pada palindrome menampilkan perbedaan kosong")
-    void perbedaanL_ShouldHandlePalindromeCorrectly() {
-        HomeController controller = new HomeController();
-        String text = "KAYAK"; // palindrome
+    @DisplayName("PerbedaanL menangani palindrome dengan benar")
+    void perbedaanL_ShouldHandlePalindrome() {
+        String text = "KAYAK";
         String encoded = Base64.getEncoder().encodeToString(text.getBytes());
 
         String result = controller.perbedaanL(encoded);
 
         assertTrue(result.contains("Teks Asli: KAYAK"));
         assertTrue(result.contains("Kebalikannya: KAYAK"));
+        assertTrue(result.contains("Perbedaannya: "));
     }
 
     // ============================
-    // 5️⃣ Tes Paling Ter
+    // 6️⃣ Tes Paling Ter
     // ============================
-    @Test
-    @DisplayName("PalingTer menampilkan kata terpendek dan terpanjang dengan benar")
-    void palingTer_ShouldReturnShortestAndLongestWords() {
-        HomeController controller = new HomeController();
-        String text = "Saya belajar Spring Boot";
-        String encoded = Base64.getEncoder().encodeToString(text.getBytes());
+   @Test
+@DisplayName("PalingTer menampilkan kata terpanjang dan terpendek dengan benar")
+void palingTer_ShouldReturnShortestAndLongestWords() {
+    String text = "Hai Belajarspringboot";
+    String encoded = Base64.getEncoder().encodeToString(text.getBytes());
 
-        String result = controller.palingTer(encoded);
+    String result = controller.palingTer(encoded);
 
-        assertTrue(result.contains("Paling Pendek"));
-        assertTrue(result.contains("Paling Panjang"));
-        assertTrue(result.contains("Spring"));
-    }
+    assertTrue(result.contains("Kalimat: Hai Belajarspringboot"));
+    assertTrue(result.contains("Paling Pendek: Hai"));
+    assertTrue(result.contains("Paling Panjang: Belajarspringboot"));
+}
+@Test
+@DisplayName("PalingTer menangani kalimat dengan satu kata saja")
+void palingTer_ShouldHandleSingleWord() {
+    String text = "Springboot";
+    String encoded = Base64.getEncoder().encodeToString(text.getBytes());
+    String result = controller.palingTer(encoded);
+    assertTrue(result.contains("Kalimat: Springboot"));
+    assertTrue(result.contains("Paling Pendek: Springboot"));
+    assertTrue(result.contains("Paling Panjang: Springboot"));
+}
 
-    @Test
-    @DisplayName("PalingTer menangani satu kata dengan benar")
-    void palingTer_ShouldHandleSingleWord() {
-        HomeController controller = new HomeController();
-        String text = "Informatika";
-        String encoded = Base64.getEncoder().encodeToString(text.getBytes());
-
-        String result = controller.palingTer(encoded);
-
-        assertTrue(result.contains("Informatika"));
-        assertTrue(result.contains("Paling Pendek: Informatika"));
-        assertTrue(result.contains("Paling Panjang: Informatika"));
-    }
-    
 }
