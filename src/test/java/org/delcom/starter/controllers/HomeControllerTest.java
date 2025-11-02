@@ -149,7 +149,9 @@ void palingTer_ShouldReturnShortestAndLongestWords() {
 void palingTer_ShouldHandleSingleWord() {
     String text = "Springboot";
     String encoded = Base64.getEncoder().encodeToString(text.getBytes());
+
     String result = controller.palingTer(encoded);
+
     assertTrue(result.contains("Kalimat: Springboot"));
     assertTrue(result.contains("Paling Pendek: Springboot"));
     assertTrue(result.contains("Paling Panjang: Springboot"));
