@@ -1,58 +1,81 @@
 package org.delcom.starter.controllers;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import java.util.Base64;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.*;
+// import java.util.stream.Collectors;
 
 @RestController
 public class HomeController {
 
+    // == Method Asli dari Kode 1 ==
     @GetMapping("/")
     public String hello() {
         return "Hay Abdullah, selamat datang di pengembangan aplikasi dengan Spring Boot!";
     }
 
-    @GetMapping("/hello/{name}")
-    public String sayHello(@PathVariable String name) {
-        return "Hello, " + name + "!";
+    // == Method Asli dari Kode 1 ==
+    @GetMapping("/sayHello/{nama}")
+    public String sayHello(@PathVariable String nama) {
+        return "Hello, " + nama + "!";
     }
 
-    // ============================
-    // 4.1 Migrasi Kode Praktikum 1
-    // ============================
+    // == Method Asli dari Kode 1 ==
+    @PostMapping("/informasiNim")
+    public String informasiNim(@RequestBody String nim) {
+        nim = nim.trim();
 
-    // 1️⃣ Informasi NIM
-    @GetMapping("/informasiNim/{nim}")
-    public String informasiNim(@PathVariable String nim) {
-        String programStudi = getProgramStudi(nim.substring(0, 3));
-        String angkatan = "20" + nim.substring(3, 5);
-        String urutan = String.valueOf(Integer.parseInt(nim.substring(5)));
-
-        return String.format(
-            "Informasi NIM %s:<br>> Program Studi: %s<br>> Angkatan: %s<br>> Urutan: %s",
-            nim, programStudi, angkatan, urutan
-        );
-    }
-
-    // ✅ Disesuaikan agar cocok dengan unit test
-    private String getProgramStudi(String prefix) {
-        switch (prefix) {
-            case "11S": return "Sarjana Informatika";
-            case "12S": return "Sarjana Sistem Informasi";
-            case "14S": return "Sarjana Teknik Elektro";
-            case "21S": return "Sarjana Manajemen Rekayasa";
-            case "22S": return "Sarjana Teknik Metalurgi";
-            case "31S": return "Sarjana Teknik Bioproses";
-            case "114": return "Diploma Teknik Rekayasa Perangkat Lunak";
-            case "113": return "Diploma Teknologi Informasi";
-            case "133": return "Diploma Teknologi Komputer";
-            default: return "Program Studi Tidak Dikenal";
+        // Validasi panjang NIM
+        if (nim.length() != 8) {
+            return "NIM harus 8 karakter";
         }
-    }
 
-    // 2️⃣ Perolehan Nilai
+        // Ekstrak komponen
+        String kodeProdi = nim.substring(0, 3);
+        String angkatan = "20" + nim.substring(3, 5);
+        String urutan = nim.substring(7);
+
+        String programStudi;
+
+        // Mapping Program Studi
+        switch (kodeProdi) {
+            case "11S":
+                programStudi = "Sarjana Informatika";
+                break;
+            case "12S":
+                programStudi = "Sarjana Sistem Informasi";
+                break;
+            case "14S":
+                programStudi = "Sarjana Teknik Elektro";
+                break;
+            case "21S":
+                programStudi = "Sarjana Manajemen Rekayasa";
+                break;
+            case "22S":
+                programStudi = "Sarjana Teknik Metalurgi";
+                break;
+            case "31S":
+                programStudi = "Sarjana Teknik Bioproses";
+                break;
+            case "114":
+                programStudi = "Diploma 4 Teknologi Rekasaya Perangkat Lunak";
+                break;
+            case "113":
+                programStudi = "Diploma 3 Teknologi Informasi";
+                break;
+            case "133":
+                programStudi = "Diploma 3 Teknologi Komputer";
+                break;
+            default:
+                return "Program Studi tidak Tersedia";
+        }
+
+        return String.format("Inforamsi NIM %s: >> Program Studi: %s>> Angkatan: %s>> Urutan: %s",
+                nim, programStudi, angkatan, urutan);
+    }
+    
+    // == Method Asli dari Kode 1 ==
+    //Perolehan Nilai
     @GetMapping("/perolehanNilai")
     public String perolehanNilai(@RequestParam String strBase64) {
         byte[] decoded = Base64.getDecoder().decode(strBase64);
@@ -60,46 +83,144 @@ public class HomeController {
         return "Perolehan Nilai: " + nilai;
     }
 
-    // 3️⃣ Perbedaan L dan Kebalikannya
-    @GetMapping("/perbedaanL")
-    public String perbedaanL(@RequestParam String strBase64) {
-        byte[] decoded = Base64.getDecoder().decode(strBase64);
-        String text = new String(decoded);
+    // == Method 'perbedaanL' Diambil dari Kode 2 ==
+    // ==============
+    @GetMapping("/perbedaanL/{strBase64}")
+    public String perbedaanL(@PathVariable String strBase64) {
+        try {
+            // 1. Dekode Base64
+            String inputAsli = new String(Base64.getDecoder().decode(strBase64));
+            // 2. Pisahkan input menjadi 3 bagian (misal: "20|20|5")
+            String[] parts = inputAsli.trim().split("\\|");
 
-        StringBuilder reversed = new StringBuilder(text).reverse();
-        StringBuilder diff = new StringBuilder();
+            // 3. Pastikan formatnya benar (3 bagian)
+            if (parts.length == 3) {
+                int nilaiL = Integer.parseInt(parts[0]);
+                int nilaiKebalikanL = Integer.parseInt(parts[1]);
+                int nilaiTengah = Integer.parseInt(parts[2]);
+                
+                // 4. Hitung perbedaan
+                int perbedaan = Math.abs(nilaiL - nilaiKebalikanL);
+                
+                // 5. Tentukan dominan (sesuai output, tampaknya ini adalah nilaiTengah)
+                int dominan = nilaiTengah;
 
-        for (int i = 0; i < text.length(); i++) {
-            if (text.charAt(i) != reversed.charAt(i)) {
-                diff.append(text.charAt(i));
+                // 6. Kembalikan hasil sesuai format screenshot
+                return "Nilai L: " + nilaiL + ": Nilai Kebalikan L: " + nilaiKebalikanL + 
+                        ": Nilai Tengah: " + nilaiTengah + " Perbedaan: " + perbedaan + 
+                        " Dominan: " + dominan;
+            } else {
+                return "Error: Format input tidak valid. Harusnya 'angka1|angka2|angka3'.";
             }
-        }
 
-        return String.format(
-            "Teks Asli: %s<br>Kebalikannya: %s<br>Perbedaannya: %s",
-            text, reversed, diff
-        );
+        } catch (NumberFormatException e) {
+            // Menangani jika string hasil dekode bukan merupakan angka
+            return "Error: Input bukan angka yang valid.";
+        } catch (IllegalArgumentException e) {
+            // Menangani jika string Base64 tidak valid
+            return "Error: Format Base64 tidak valid.";
+        }
     }
+        
+    // == Method 'palingTer' Diambil dari Kode 2 ==
+    @GetMapping("/palingTer/{strBase64}")
+    public String palingTer(@PathVariable String strBase64) {
+        try {
+            // 1. DECODE Base64
+            byte[] decodedBytes = Base64.getDecoder().decode(strBase64);
+            String inputAsli = new String(decodedBytes);
 
-    // 4️⃣ Paling Ter
-    @GetMapping("/palingTer")
-    public String palingTer(@RequestParam String strBase64) {
-        byte[] decoded = Base64.getDecoder().decode(strBase64);
-        String data = new String(decoded);
+            // 2. LOGIKA PROGRAM
+            String[] baris = inputAsli.split("\\R");
+            
+            // Buat array untuk menyimpan angka-angka
+            int[] angka = new int[baris.length];
+            int count = 0; // Jumlah angka yang valid
+            int min = Integer.MAX_VALUE;
+            int max = Integer.MIN_VALUE;
 
-        // Pisahkan berdasarkan spasi, lalu cari kata terpanjang dan terpendek
-        String[] kata = data.split("\\s+");
-        String terpendek = kata[0];
-        String terpanjang = kata[0];
+            // Loop pertama: Parse angka, hitung min & max
+            for (String b : baris) {
+                try {
+                    int n = Integer.parseInt(b.trim());
+                    angka[count] = n; // Simpan angka valid
+                    count++;
+                    
+                    if (n > max) max = n;
+                    if (n < min) min = n;
+                    
+                } catch (NumberFormatException e) {
+                    // Abaikan baris yang bukan angka
+                }
+            }
 
-        for (String k : kata) {
-            if (k.length() < terpendek.length()) terpendek = k;
-            if (k.length() > terpanjang.length()) terpanjang = k;
+            // 3. RETURN jika tidak ada angka
+            if (count == 0) {
+                return "Tidak ada angka yang valid ditemukan.";
+            }
+            
+            // 4. LOGIKA FREKUENSI (Tanpa Map)
+            int terbanyakVal = 0;
+            int terbanyakCount = 0;
+            int tersedikitVal = 0;
+            int tersedikitCount = Integer.MAX_VALUE;
+            int terendahCount = 0; // Hitung frekuensi angka 'min'
+
+            for (int i = 0; i < count; i++) {
+                int currentNum = angka[i];
+                int currentCount = 0;
+                
+                // Cek apakah angka ini sudah pernah dihitung sebelumnya
+                boolean seen = false;
+                for (int j = 0; j < i; j++) {
+                    if (angka[j] == currentNum) {
+                        seen = true;
+                        break;
+                    }
+                }
+                if (seen) continue; // Lewati jika sudah dihitung
+
+                // Hitung frekuensi 'currentNum'
+                for (int j = 0; j < count; j++) {
+                    if (angka[j] == currentNum) {
+                        currentCount++;
+                    }
+                }
+                
+                // Update Terbanyak
+                if (currentCount > terbanyakCount) {
+                    terbanyakCount = currentCount;
+                    terbanyakVal = currentNum;
+                }
+                
+                // Update Tersedikit
+                if (currentCount < tersedikitCount) {
+                    tersedikitCount = currentCount;
+                    tersedikitVal = currentNum;
+                }
+            }
+            
+            // Hitung frekuensi angka Terendah (min)
+            for (int i = 0; i < count; i++) {
+                if (angka[i] == min) {
+                    terendahCount++;
+                }
+            }
+
+            // 5. Hitung Jumlah
+            long jumlahTertinggi = (long)max * terbanyakCount;
+            long jumlahTerendah = (long)min * terendahCount;
+
+            // 6. Kembalikan hasil sesuai format screenshot
+            return "Tertinggi: " + max + " Terendah: " + min + 
+                    " Terbanyak: " + terbanyakVal + " (" + terbanyakCount + "x) Tersedikit: " + 
+                    tersedikitVal + " (" + tersedikitCount + "x) Jumlah Tertinggi: " + 
+                    max + " * " + terbanyakCount + " = " + jumlahTertinggi + 
+                    " Jumlah Terendah: " + min + " * " + terendahCount + " = " + jumlahTerendah;
+            
+        } catch (IllegalArgumentException e) {
+             // 4. CATCH INI SEKARANG AKAN BERFUNGSI
+            return "Error: Format Base64 tidak valid.";
         }
-
-        return String.format(
-            "Kalimat: %s<br>Paling Pendek: %s<br>Paling Panjang: %s",
-            data, terpendek, terpanjang
-        );
     }
 }

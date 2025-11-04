@@ -1,160 +1,183 @@
 package org.delcom.starter.controllers;
 
-import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+
+import org.junit.jupiter.api.DisplayName;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class HomeControllerTest {
+@SpringBootTest
+class HomeControllerUnitTest {
 
-    private final HomeController controller = new HomeController();
+    private HomeController controller;
 
-    // ============================
-    // 1️⃣ Tes Hello Endpoint
-    // ============================
+    // Fungsi bantu dari Test 2 untuk encode string ke Base64
+    private String encode(String text) {
+        return Base64.getEncoder().encodeToString(text.getBytes());
+    }
+
+    // @BeforeEach memastikan controller baru dibuat sebelum SETIAP tes (dari Test 2)
+    @BeforeEach
+    void setUp() {
+        controller = new HomeController();
+    }
+
+    // == Tes Asli dari Test 1 (disesuaikan dengan @BeforeEach) ==
     @Test
-    @DisplayName("Mengembalikan pesan sambutan default dengan benar")
-    void hello_ShouldReturnWelcomeMessage() {
+    @DisplayName("Mengembalikan pesan selamat datang yang benar")
+    void hello_ShouldReturnWelcomeMessage() throws Exception {
+        // Act
         String result = controller.hello();
+        // Assert
         assertEquals("Hay Abdullah, selamat datang di pengembangan aplikasi dengan Spring Boot!", result);
     }
 
     @Test
-    @DisplayName("Mengembalikan sapaan personal yang benar")
-    void sayHello_ShouldReturnPersonalGreeting() {
-        String result = controller.sayHello("Niken");
-        assertEquals("Hello, Niken!", result);
+    @DisplayName("Mengembalikan pesan sapaan yang dipersonalisasi")
+    void helloWithName_ShouldReturnPersonalizedGreeting() throws Exception {
+        // Act
+        String result = controller.sayHello("Abdullah");
+        // Assert
+        assertEquals("Hello, Abdullah!", result);
     }
 
-    // ============================
-    // 2️⃣ Tes Informasi NIM
-    // ============================
     @Test
-    @DisplayName("Mengembalikan informasi NIM dengan benar untuk Sarjana Informatika")
-    void informasiNim_ShouldReturnFormattedInfo_ForInformatika() {
-        String nim = "11S24052";
-        String expected = "Informasi NIM 11S24052:<br>> Program Studi: Sarjana Informatika<br>> Angkatan: 2024<br>> Urutan: 52";
-        String result = controller.informasiNim(nim);
+    @DisplayName("Menguji semua kemungkinan NIM valid dan tidak valid")
+    void informasiNIM_semua_kemungkinan_nim_valid_dan_tidak_valid() throws Exception {
+        // Test NIM Tidak Valid
+        assertEquals("NIM harus 8 karakter", controller.informasiNim("11S180"));
+        
+        // Test NIM Valid dengan Prodi Tidak Tersedia
+        assertEquals("Program Studi tidak Tersedia", controller.informasiNim("ZZS18005"));
+
+        // Test Sarjan Informatika
+        assertEquals("Inforamsi NIM 11S18005: >> Program Studi: Sarjana Informatika>> Angkatan: 2018>> Urutan: 5", controller.informasiNim("11S18005"));
+        
+        // Test Sarjana Sistem Informasi
+        assertEquals("Inforamsi NIM 12S18005: >> Program Studi: Sarjana Sistem Informasi>> Angkatan: 2018>> Urutan: 5", controller.informasiNim("12S18005"));
+        
+        // Test Sarjana Teknik Elektro
+        assertEquals("Inforamsi NIM 14S18005: >> Program Studi: Sarjana Teknik Elektro>> Angkatan: 2018>> Urutan: 5", controller.informasiNim("14S18005"));
+
+        // Test Sarjana Manajemen Rekayasa
+        assertEquals("Inforamsi NIM 21S18005: >> Program Studi: Sarjana Manajemen Rekayasa>> Angkatan: 2018>> Urutan: 5", controller.informasiNim("21S18005"));
+        
+        // Test Sarjana Teknik Metalurgi
+        assertEquals("Inforamsi NIM 22S18005: >> Program Studi: Sarjana Teknik Metalurgi>> Angkatan: 2018>> Urutan: 5", controller.informasiNim("22S18005"));
+        
+        // Test Sarjana Teknik Bioproses
+        assertEquals("Inforamsi NIM 31S18005: >> Program Studi: Sarjana Teknik Bioproses>> Angkatan: 2018>> Urutan: 5", controller.informasiNim("31S18005"));
+
+        // Test D4 TRPL
+        assertEquals("Inforamsi NIM 11418005: >> Program Studi: Diploma 4 Teknologi Rekasaya Perangkat Lunak>> Angkatan: 2018>> Urutan: 5", controller.informasiNim("11418005"));
+        
+        // Test D3 TI
+        assertEquals("Inforamsi NIM 11318005: >> Program Studi: Diploma 3 Teknologi Informasi>> Angkatan: 2018>> Urutan: 5", controller.informasiNim("11318005"));
+        
+        // Test D3 TK
+        assertEquals("Inforamsi NIM 13318005: >> Program Studi: Diploma 3 Teknologi Komputer>> Angkatan: 2018>> Urutan: 5", controller.informasiNim("13318005"));
+    }
+
+    @Test
+    @DisplayName("Mendekode base64 dan mengembalikan nilai dengan benar")
+    void perolehanNilai_ShouldDecodeBase64Correctly() {
+        // Arrange
+        String nilaiAsli = "A=90 B=80 C=70";
+        String base64 = Base64.getEncoder().encodeToString(nilaiAsli.getBytes(StandardCharsets.UTF_8));
+        // Act
+        String result = controller.perolehanNilai(base64);
+        // Assert
+        assertTrue(result.contains("A=90"));
+        assertTrue(result.contains("Perolehan Nilai"));
+    }
+    
+    // == Blok Tes untuk 'perbedaanL' Diambil dari Test 2 ==
+    @Test
+    @DisplayName("perbedaanL - Input valid")
+    void testPerbedaanL_ValidInput() {
+        String input = "20|20|5";
+        String base64Input = encode(input);
+        String result = controller.perbedaanL(base64Input);
+        
+        assertTrue(result.contains("Nilai L: 20"));
+        assertTrue(result.contains("Nilai Kebalikan L: 20"));
+        assertTrue(result.contains("Nilai Tengah: 5"));
+        assertTrue(result.contains("Perbedaan: 0"));
+        assertTrue(result.contains("Dominan: 5"));
+    }
+
+    @Test
+    @DisplayName("perbedaanL - Format input salah (bukan 3 bagian)")
+    void testPerbedaanL_InvalidFormat() {
+        String input = "20|20"; // Hanya 2 bagian
+        String base64Input = encode(input);
+        String result = controller.perbedaanL(base64Input);
+        assertEquals("Error: Format input tidak valid. Harusnya 'angka1|angka2|angka3'.", result);
+    }
+
+    @Test
+    @DisplayName("perbedaanL - Input bukan angka (NumberFormatException)")
+    void testPerbedaanL_NotANumber() {
+        String input = "20|abc|5"; // 'abc' bukan angka
+        String base64Input = encode(input);
+        String result = controller.perbedaanL(base64Input);
+        assertEquals("Error: Input bukan angka yang valid.", result);
+    }
+
+    @Test
+    @DisplayName("perbedaanL - Base64 tidak valid (IllegalArgumentException)")
+    void testPerbedaanL_InvalidBase64() {
+        String invalidBase64 = "MTIz*"; // Base64 rusak
+        String result = controller.perbedaanL(invalidBase64);
+        assertEquals("Error: Format Base64 tidak valid.", result);
+    }
+    
+    // == Blok Tes untuk 'palingTer' Diambil dari Test 2 ==
+    @Test
+    @DisplayName("Paling Ter - Input valid")
+    void testPalingTer_ValidInput() {
+        String input = "10\n5\n9\n10\n5\n10";
+        String base64Input = encode(input);
+        String result = controller.palingTer(base64Input);
+        String expected = "Tertinggi: 10 Terendah: 5 Terbanyak: 10 (3x) Tersedikit: 9 (1x) Jumlah Tertinggi: 10 * 3 = 30 Jumlah Terendah: 5 * 2 = 10";
         assertEquals(expected, result);
     }
 
     @Test
-    @DisplayName("Mengembalikan informasi NIM dengan benar untuk program studi lain")
-    void informasiNim_ShouldReturnFormattedInfo_ForOtherPrograms() {
-        String nim = "21S23001";
-        String expected = "Informasi NIM 21S23001:<br>> Program Studi: Sarjana Manajemen Rekayasa<br>> Angkatan: 2023<br>> Urutan: 1";
-        String result = controller.informasiNim(nim);
-        assertEquals(expected, result);
+    @DisplayName("Paling Ter - Tidak ada angka valid")
+    void testPalingTer_NoValidNumbers() {
+        String input = "abc\ndef\nghi";
+        String base64Input = encode(input);
+        String result = controller.palingTer(base64Input);
+        assertEquals("Tidak ada angka yang valid ditemukan.", result);
     }
 
     @Test
-    @DisplayName("Mengembalikan 'Program Studi Tidak Dikenal' untuk kode prefix tidak valid")
-    void informasiNim_ShouldReturnUnknownProgram_ForInvalidPrefix() {
-        String nim = "99X25001";
-        String result = controller.informasiNim(nim);
-        assertTrue(result.contains("Program Studi Tidak Dikenal"));
+    @DisplayName("Paling Ter - Base64 tidak valid")
+    void testPalingTer_InvalidBase64() {
+        String invalidBase64 = "MTIz*"; // Base64 rusak
+        String result = controller.palingTer(invalidBase64);
+        assertEquals("Error: Format Base64 tidak valid.", result);
     }
-
-    // ============================
-    // 3️⃣ Tes getProgramStudi (private)
-    // ============================
-    @Test
-    @DisplayName("getProgramStudi mengembalikan nama program studi yang benar")
-    void getProgramStudi_ShouldReturnCorrectPrograms() throws Exception {
-        var method = HomeController.class.getDeclaredMethod("getProgramStudi", String.class);
-        method.setAccessible(true);
-
-        assertEquals("Sarjana Informatika", method.invoke(controller, "11S"));
-        assertEquals("Sarjana Sistem Informasi", method.invoke(controller, "12S"));
-        assertEquals("Sarjana Teknik Elektro", method.invoke(controller, "14S"));
-        assertEquals("Sarjana Manajemen Rekayasa", method.invoke(controller, "21S"));
-        assertEquals("Sarjana Teknik Metalurgi", method.invoke(controller, "22S"));
-        assertEquals("Sarjana Teknik Bioproses", method.invoke(controller, "31S"));
-        assertEquals("Diploma Teknik Rekayasa Perangkat Lunak", method.invoke(controller, "114"));
-        assertEquals("Diploma Teknologi Informasi", method.invoke(controller, "113"));
-        assertEquals("Diploma Teknologi Komputer", method.invoke(controller, "133"));
-    }
-
-    @Test
-    @DisplayName("getProgramStudi mengembalikan 'Program Studi Tidak Dikenal' untuk kode tidak valid")
-    void getProgramStudi_ShouldReturnUnknownForInvalidCode() throws Exception {
-        var method = HomeController.class.getDeclaredMethod("getProgramStudi", String.class);
-        method.setAccessible(true);
-
-        assertEquals("Program Studi Tidak Dikenal", method.invoke(controller, "99X"));
-        assertEquals("Program Studi Tidak Dikenal", method.invoke(controller, ""));
-    }
-
-    // ============================
-    // 4️⃣ Tes Perolehan Nilai
-    // ============================
-    @Test
-    @DisplayName("Perolehan Nilai menampilkan hasil decoding Base64 dengan benar")
-    void perolehanNilai_ShouldReturnDecodedValue() {
-        String text = "Nilai Akhir: 95";
-        String encoded = Base64.getEncoder().encodeToString(text.getBytes());
-
-        String result = controller.perolehanNilai(encoded);
-
-        assertEquals("Perolehan Nilai: Nilai Akhir: 95", result);
-    }
-
-    // ============================
-    // 5️⃣ Tes Perbedaan L dan Kebalikannya
-    // ============================
-    @Test
-    @DisplayName("PerbedaanL menampilkan perbedaan karakter dengan benar")
-    void perbedaanL_ShouldReturnDifferences() {
-        String text = "ABCD";
-        String encoded = Base64.getEncoder().encodeToString(text.getBytes());
-
-        String result = controller.perbedaanL(encoded);
-
-        assertTrue(result.contains("Teks Asli: ABCD"));
-        assertTrue(result.contains("Kebalikannya: DCBA"));
-        assertTrue(result.contains("Perbedaannya"));
-    }
-
-    @Test
-    @DisplayName("PerbedaanL menangani palindrome dengan benar")
-    void perbedaanL_ShouldHandlePalindrome() {
-        String text = "KAYAK";
-        String encoded = Base64.getEncoder().encodeToString(text.getBytes());
-
-        String result = controller.perbedaanL(encoded);
-
-        assertTrue(result.contains("Teks Asli: KAYAK"));
-        assertTrue(result.contains("Kebalikannya: KAYAK"));
-        assertTrue(result.contains("Perbedaannya: "));
-    }
-
-    // ============================
-    // 6️⃣ Tes Paling Ter
-    // ============================
-   @Test
-@DisplayName("PalingTer menampilkan kata terpanjang dan terpendek dengan benar")
-void palingTer_ShouldReturnShortestAndLongestWords() {
-    String text = "Hai Belajarspringboot";
-    String encoded = Base64.getEncoder().encodeToString(text.getBytes());
-
-    String result = controller.palingTer(encoded);
-
-    assertTrue(result.contains("Kalimat: Hai Belajarspringboot"));
-    assertTrue(result.contains("Paling Pendek: Hai"));
-    assertTrue(result.contains("Paling Panjang: Belajarspringboot"));
-}
+    
 @Test
-@DisplayName("PalingTer menangani kalimat dengan satu kata saja")
-void palingTer_ShouldHandleSingleWord() {
-    String text = "Springboot";
-    String encoded = Base64.getEncoder().encodeToString(text.getBytes());
+@DisplayName("Paling Ter - Input dengan frekuensi yang sama")
+void testPalingTer_SameFrequency() {
+    String input = """
+            10
+            5
+            10
+            5
+            """;
 
-    String result = controller.palingTer(encoded);
-
-    assertTrue(result.contains("Kalimat: Springboot"));
-    assertTrue(result.contains("Paling Pendek: Springboot"));
-    assertTrue(result.contains("Paling Panjang: Springboot"));
+    String base64Input = encode(input);
+    String result = controller.palingTer(base64Input);
+    
+    String expected = "Tertinggi: 10 Terendah: 5 Terbanyak: 10 (2x) Tersedikit: 10 (2x) Jumlah Tertinggi: 10 * 2 = 20 Jumlah Terendah: 5 * 2 = 10";
+    assertEquals(expected, result);
 }
-
 }
